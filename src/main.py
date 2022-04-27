@@ -1,3 +1,9 @@
+"""Punto de entrada principal del programa.
+
+    Desde aquí se manejan las llamadas para ocultar texto en una imagen.
+    O para develar texto oculto en fotos.
+"""
+
 import os
 from sys import argv, exit, path
 

@@ -1,3 +1,6 @@
+"""Módulo que provee la funcion para develar texto en una imagen. 
+"""
+
 from typing import List
 
 import numpy as np

@@ -1,3 +1,7 @@
+""" Módulo que provee funciones necesarias para ocultar
+    texto en imágenes.
+"""
+
 from random import randint
 from typing import List
 
