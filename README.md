@@ -10,13 +10,13 @@ Se tiene que realizar un esteganógrafo. El cual va tomar un texto y lo oculta e
 
 ### Correr programa
 
-Despues de desempacar la carpeta Tarea2 te posicionas en la carpeta lsb_steganography/
-Las imágenes tienen que estar en la carpeta lsb_steganography/textos.
-Los textos tienen que estar en la carpeta lsb_steganography/imagenes.
-El nombre de la imagen y del texto en la línea de llamada es el nombre solo. Es decir, sin incluir lsb_steganography/textos o lsb_steganography/imagenes.
+Despues de desempacar la carpeta Tarea2 te posicionas en la carpeta esteganografo/
+Las imágenes tienen que estar en la carpeta esteganografo/imagenes.
+Los textos tienen que estar en la carpeta esteganografo/textos.
+El nombre de la imagen y del texto en la línea de llamada es el nombre solo. Es decir, sin incluir esteganografo/textos o esteganografo/imagenes.
 
 ```
-$ cd lsb_steganography/
+$ cd esteganografo/
 
 Ocultar:
 $ python src/main.py h [archivo con texto(.txt) a ocultar] [imagen(.png)] [nombre de imagen con texto a ocultar (.png)]
