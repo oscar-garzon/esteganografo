@@ -15,11 +15,12 @@ class Tests(unittest.TestCase):
         car_devuelto = develar.trespixeles_a_car_bin(
             [[14, 14, 15], [21, 20, 20], [30, 30, 31]], 0
         )
-        self.assertEqual(car_devuelto, '{0:08b}'.format(ord('a')))
+        self.assertEqual(car_devuelto, "{0:08b}".format(ord("a")))
         car_devuelto = develar.trespixeles_a_car_bin(
             [[16, 16, 17], [13, 13, 12], [16, 16, 16]], 0
         )
-        self.assertEqual(car_devuelto, '{0:08b}'.format(ord('p')))
+        self.assertEqual(car_devuelto, "{0:08b}".format(ord("p")))
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()
