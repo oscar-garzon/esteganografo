@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.9.1" />
-<title>Tarea02.src.develar API documentation</title>
+<title>src.main API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,48 +19,81 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>Tarea02.src.develar</code></h1>
+<h1 class="title">Module <code>src.main</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from typing import List
+<pre><code class="python">import os
+from sys import argv, exit, path
 
+from PIL import Image
 import numpy as np
 
+path.append(os.getcwd() + &#34;/src&#34;)
 
-def develar_texto(arr_img: np.ndarray) -&gt; str:
-    &#34;&#34;&#34;Regresa el texto oculto en un arreglo .&#34;&#34;&#34;
-    ancho, alto, colores = arr_img.shape
-    arr_img_lineal = arr_img.reshape((ancho * alto, colores))
-
-    texto = &#39;&#39;
-    for indice in range(0, ancho * alto, 3):
-        car_bin = trespixeles_a_car_bin(arr_img_lineal, indice)
-        caracter = chr(int(car_bin, 2))
-        texto += caracter
-        if texto[-2:] == &#39;\z&#39;:
-            return texto[:-2]
+import ocultar, develar
 
 
-def trespixeles_a_car_bin(arr: List[List[int]], idx: int) -&gt; str:
-    &#34;&#34;&#34;Regresa el valor binario del caracter oculto en arr[idx: idx+3]
-
-    Este método supone que arr es un arreglo lineal de píxeles.
+def ocultar_texto_en_imagen(
+    archivo_texto: str, img_original: str, nombre_img_modificada: str
+) -&gt; None:
+    &#34;&#34;&#34;Oculta el contenido de archivo_texto en img_original y lo guarda en
+    el sistema como ${nombre_img_modificada}.png
     &#34;&#34;&#34;
-    # el primer dígito siempre va ser cero porque todos los caracteres
-    # están entre 0-127
-    caracter = &#39;0&#39;
-    for pxl in range(3):
-        for color in range(3):
-            if pxl == 0 and (color == 0 or color == 1):
-                continue
-            else:
-                valor_dec = arr[pxl + idx][color]
-                caracter += &#39;{0:08b}&#39;.format(valor_dec)[-1]
-    return caracter</code></pre>
+
+    with open(f&#34;textos/{archivo_texto}&#34;) as at:
+        texto = at.read().strip()
+        img = Image.open(f&#34;imagenes/{img_original}&#34;)
+    txt_binario = ocultar.convertir_texto_a_binario(texto)
+    arr_modificado = ocultar.ocultar_binario_en_imagen(txt_binario, img)
+    img_final = Image.fromarray(arr_modificado)
+    img_final.save(f&#34;imagenes/{nombre_img_modificada}&#34;, format=&#34;png&#34;)
+
+
+def develar_texto_en_imagen(img: str, nombre_texto: str) -&gt; None:
+    &#34;&#34;&#34;Devela el texto oculto en img y lo guarda en el sistema como
+    ${nombre_texto}.txt
+    &#34;&#34;&#34;
+    try:
+        img = Image.open(f&#34;imagenes/{img}&#34;)
+    except OSError:
+        print(&#34;Imagen no encontrada&#34;)
+    texto_develado = develar.develar_texto(np.asarray(img, np.uint8))
+    with open(f&#34;textos/{nombre_texto}&#34;, &#34;w&#34;) as archivo:
+        archivo.write(texto_develado)
+
+
+if __name__ == &#34;__main__&#34;:
+
+    def uso():
+        print(
+            &#34;Uso:\n Ocultar: python src/main.py h [archivo con texto(.txt) a ocultar] [imagen(.png)] [nombre de imagen con texto oculto (.png)]&#34;
+        )
+        print(
+            &#34; Develar: python src/main.py u [imagen(.png) con texto oculto] [nombre de archivo(.txt) para guardar el texto]&#34;
+        )
+        exit()
+
+    if argv[1] == &#34;h&#34;:
+        if len(argv) != 5:
+            uso()
+        if argv[2][-3:] != &#34;txt&#34; or argv[3][-3:] != &#34;png&#34; or argv[4][-3:] != &#34;png&#34;:
+            uso()
+        try:
+            ocultar_texto_en_imagen(argv[2], argv[3], argv[4])
+        except FileNotFoundError:
+            print(&#34;Imagen o archivo de texto no encontrados&#34;)
+        except Exception as e:
+            print(e)
+    elif argv[1] == &#34;u&#34;:
+        if len(argv) != 4:
+            uso()
+        if argv[2][-3:] != &#34;png&#34; or argv[3][-3:] != &#34;txt&#34;:
+            uso()
+        develar_texto_en_imagen(argv[2], argv[3])</code></pre>
 </details>
 </section>
 <section>
@@ -70,55 +103,53 @@ def trespixeles_a_car_bin(arr: List[List[int]], idx: int) -&gt; str:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="Tarea02.src.develar.develar_texto"><code class="name flex">
-<span>def <span class="ident">develar_texto</span></span>(<span>arr_img: numpy.ndarray) ‑> str</span>
+<dt id="src.main.develar_texto_en_imagen"><code class="name flex">
+<span>def <span class="ident">develar_texto_en_imagen</span></span>(<span>img: str, nombre_texto: str) ‑> NoneType</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Regresa el texto oculto en un arreglo .</p></div>
+<div class="desc"><p>Devela el texto oculto en img y lo guarda en el sistema como
+${nombre_texto}.txt</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def develar_texto(arr_img: np.ndarray) -&gt; str:
-    &#34;&#34;&#34;Regresa el texto oculto en un arreglo .&#34;&#34;&#34;
-    ancho, alto, colores = arr_img.shape
-    arr_img_lineal = arr_img.reshape((ancho * alto, colores))
-
-    texto = &#39;&#39;
-    for indice in range(0, ancho * alto, 3):
-        car_bin = trespixeles_a_car_bin(arr_img_lineal, indice)
-        caracter = chr(int(car_bin, 2))
-        texto += caracter
-        if texto[-2:] == &#39;\z&#39;:
-            return texto[:-2]</code></pre>
+<pre><code class="python">def develar_texto_en_imagen(img: str, nombre_texto: str) -&gt; None:
+    &#34;&#34;&#34;Devela el texto oculto en img y lo guarda en el sistema como
+    ${nombre_texto}.txt
+    &#34;&#34;&#34;
+    try:
+        img = Image.open(f&#34;imagenes/{img}&#34;)
+    except OSError:
+        print(&#34;Imagen no encontrada&#34;)
+    texto_develado = develar.develar_texto(np.asarray(img, np.uint8))
+    with open(f&#34;textos/{nombre_texto}&#34;, &#34;w&#34;) as archivo:
+        archivo.write(texto_develado)</code></pre>
 </details>
 </dd>
-<dt id="Tarea02.src.develar.trespixeles_a_car_bin"><code class="name flex">
-<span>def <span class="ident">trespixeles_a_car_bin</span></span>(<span>arr: List[List[int]], idx: int) ‑> str</span>
+<dt id="src.main.ocultar_texto_en_imagen"><code class="name flex">
+<span>def <span class="ident">ocultar_texto_en_imagen</span></span>(<span>archivo_texto: str, img_original: str, nombre_img_modificada: str) ‑> NoneType</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Regresa el valor binario del caracter oculto en arr[idx: idx+3]</p>
-<p>Este método supone que arr es un arreglo lineal de píxeles.</p></div>
+<div class="desc"><p>Oculta el contenido de archivo_texto en img_original y lo guarda en
+el sistema como ${nombre_img_modificada}.png</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def trespixeles_a_car_bin(arr: List[List[int]], idx: int) -&gt; str:
-    &#34;&#34;&#34;Regresa el valor binario del caracter oculto en arr[idx: idx+3]
-
-    Este método supone que arr es un arreglo lineal de píxeles.
+<pre><code class="python">def ocultar_texto_en_imagen(
+    archivo_texto: str, img_original: str, nombre_img_modificada: str
+) -&gt; None:
+    &#34;&#34;&#34;Oculta el contenido de archivo_texto en img_original y lo guarda en
+    el sistema como ${nombre_img_modificada}.png
     &#34;&#34;&#34;
-    # el primer dígito siempre va ser cero porque todos los caracteres
-    # están entre 0-127
-    caracter = &#39;0&#39;
-    for pxl in range(3):
-        for color in range(3):
-            if pxl == 0 and (color == 0 or color == 1):
-                continue
-            else:
-                valor_dec = arr[pxl + idx][color]
-                caracter += &#39;{0:08b}&#39;.format(valor_dec)[-1]
-    return caracter</code></pre>
+
+    with open(f&#34;textos/{archivo_texto}&#34;) as at:
+        texto = at.read().strip()
+        img = Image.open(f&#34;imagenes/{img_original}&#34;)
+    txt_binario = ocultar.convertir_texto_a_binario(texto)
+    arr_modificado = ocultar.ocultar_binario_en_imagen(txt_binario, img)
+    img_final = Image.fromarray(arr_modificado)
+    img_final.save(f&#34;imagenes/{nombre_img_modificada}&#34;, format=&#34;png&#34;)</code></pre>
 </details>
 </dd>
 </dl>
@@ -134,13 +165,13 @@ def trespixeles_a_car_bin(arr: List[List[int]], idx: int) -&gt; str:
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="Tarea02.src" href="index.html">Tarea02.src</a></code></li>
+<li><code><a title="src" href="index.html">src</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="Tarea02.src.develar.develar_texto" href="#Tarea02.src.develar.develar_texto">develar_texto</a></code></li>
-<li><code><a title="Tarea02.src.develar.trespixeles_a_car_bin" href="#Tarea02.src.develar.trespixeles_a_car_bin">trespixeles_a_car_bin</a></code></li>
+<li><code><a title="src.main.develar_texto_en_imagen" href="#src.main.develar_texto_en_imagen">develar_texto_en_imagen</a></code></li>
+<li><code><a title="src.main.ocultar_texto_en_imagen" href="#src.main.ocultar_texto_en_imagen">ocultar_texto_en_imagen</a></code></li>
 </ul>
 </li>
 </ul>
