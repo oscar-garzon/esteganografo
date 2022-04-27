@@ -7,6 +7,8 @@ Este repositorio contiene el segundo proyecto para la clase de Modelado y Progra
 
 Se tiene que realizar un esteganógrafo. El cual va tomar un texto y lo oculta en el arreglo de una imagen. El punto clave es que el esteganógrafo puede develar el texto oculto en la imagen.
 
+### Documentación
+Para ver la documentación del programa ejecutar en un navegador web el archivo html esteganografo/html/src/index.html
 
 ### Correr programa
 
